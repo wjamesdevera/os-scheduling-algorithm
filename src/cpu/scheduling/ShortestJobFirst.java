@@ -1,4 +1,4 @@
-package scheduling;
+package cpu.scheduling;
 
 public class ShortestJobFirst {
 }
