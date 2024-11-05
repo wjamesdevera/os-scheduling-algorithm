@@ -1,5 +1,5 @@
 package scheduling;
 
 public class ShortestJobFirst {
-    // test comment
+    // test comments
 }
