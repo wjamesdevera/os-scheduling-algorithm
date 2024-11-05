@@ -40,6 +40,6 @@ Feel free to fork this repository, make your improvements, and submit a pull req
 
 ## Authors
 
-- **Dawn Andal** - [@githubusername](https://github.com/)
+- **Dawn Andal** - [@githubusername](https://github.com/win8t)
 - **Winfrey De Vera** - [@wjamesdevera](https://github.com/wjamesdevera)
-- **Malt Tumaneng** - [@githubusername](https://github.com/win8t)
+- **Malt Tumaneng** - [@githubusername](https://github.com/)
