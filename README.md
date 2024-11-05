@@ -42,4 +42,4 @@ Feel free to fork this repository, make your improvements, and submit a pull req
 
 - **Dawn Andal** - [@githubusername](https://github.com/)
 - **Winfrey De Vera** - [@wjamesdevera](https://github.com/wjamesdevera)
-- **Malt Tumaneng** - [@githubusername](https://github.com/)
+- **Malt Tumaneng** - [@githubusername](https://github.com/win8t)
