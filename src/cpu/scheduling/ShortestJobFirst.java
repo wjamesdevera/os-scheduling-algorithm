@@ -13,7 +13,7 @@ public class ShortestJobFirst {
     }
 
     private Process electNextProcess() {
-        double minBurstTime = Integer.MAX_VALUE;
+        double minBurstTime = Double.MAX_VALUE;
         Process electedProcess = null;
         for(Process process: this.readyQueue) {
             if (process.getBurstTime() < minBurstTime) {
