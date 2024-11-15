@@ -5,11 +5,11 @@ import java.util.Collections;
 
 public class DiskScan {
     private final int TRACK_SIZE;
-    private final int SEEK_RATE;
+    private int SEEK_RATE;
 
-    public DiskScan(int TRACK_SIZE, int SEEK_RATE) {
+    public DiskScan(int TRACK_SIZE, int SEEK_RATE) throws Exception {
         this.TRACK_SIZE = TRACK_SIZE;
-        this.SEEK_RATE = SEEK_RATE;
+        setSeekRate(SEEK_RATE);
     }
 
     private void printScanResult(int seekCount, ArrayList<Integer> seekSequence) {
@@ -63,5 +63,14 @@ public class DiskScan {
             }
         }
         printScanResult(seekCount, seekSequence);
+    }
+
+    private void setSeekRate(int seekRate) throws Exception {
+        int MAX_SEEK_RATE = 10;
+        final String ERROR_MESSAGE = "SEEK_RATE EXCEEDS MAX_SEEK_RATE:" + MAX_SEEK_RATE;
+        if (seekRate > MAX_SEEK_RATE) {
+            throw new Exception(ERROR_MESSAGE);
+        }
+        this.SEEK_RATE = seekRate;
     }
 }
