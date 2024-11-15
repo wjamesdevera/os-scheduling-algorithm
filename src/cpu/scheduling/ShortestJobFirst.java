@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ShortestJobFirst {
     // test comments
-    private ArrayList<Process> processes = new ArrayList<>();
+    private final ArrayList<Process> processes;
     private final ArrayList<Process> readyQueue = new ArrayList<>();
     private final ArrayList<Process> completedProcess = new ArrayList<>();
 
@@ -132,36 +132,36 @@ public class ShortestJobFirst {
 
 
         //displays SJF in table format
-        System.out.println(String.format("%-10s %-10s %-10s %-20s %-20s %-20s",
-                "Process", "Arrival", "Burst", "Completion Time", "Turn Around Time", "Waiting Time"));
-
-        for (int i = 0; i < process; i++) {
-            System.out.println(String.format("P%-9d %-10d %-10d %-20d %-20d %-20d",
-                    SJFMatrix[i][0], SJFMatrix[i][1], SJFMatrix[i][2],
-                    completionTime[i], turnAroundTime[i], waitingTime[i]));
-        }
-
-
-        //gets the total
-        for (int i = 0; i < process; i++) {
-            totalCT += completionTime[i];
-            totalTAT += turnAroundTime[i];
-            totalWT += waitingTime[i];
-        }
-        //rounds off in 2 decimal places
-        AveCT = Double.parseDouble(String.format("%.2f", (double) totalCT / process));
-        AveTAT = Double.parseDouble(String.format("%.2f", (double) totalTAT / process));
-        AveWT = Double.parseDouble(String.format("%.2f", (double) totalWT / process));
-
-        //prints the final ave and total
-        System.out.println("Total CT: " + totalCT + " | " + "Ave CT: " + AveCT);
-        System.out.println("Total TAT: " + totalTAT + " | " + "Ave TAT: " + AveTAT);
-        System.out.println("Total WT: " + totalWT + " | " + "Ave WT: " + AveWT);
+//        System.out.println(String.format("%-10s %-10s %-10s %-20s %-20s %-20s",
+//                "Process", "Arrival", "Burst", "Completion Time", "Turn Around Time", "Waiting Time"));
+//
+//        for (int i = 0; i < process; i++) {
+//            System.out.println(String.format("P%-9d %-10d %-10d %-20d %-20d %-20d",
+//                    SJFMatrix[i][0], SJFMatrix[i][1], SJFMatrix[i][2],
+//                    completionTime[i], turnAroundTime[i], waitingTime[i]));
+//        }
+//
+//
+//        //gets the total
+//        for (int i = 0; i < process; i++) {
+//            totalCT += completionTime[i];
+//            totalTAT += turnAroundTime[i];
+//            totalWT += waitingTime[i];
+//        }
+//        //rounds off in 2 decimal places
+//        AveCT = Double.parseDouble(String.format("%.2f", (double) totalCT / process));
+//        AveTAT = Double.parseDouble(String.format("%.2f", (double) totalTAT / process));
+//        AveWT = Double.parseDouble(String.format("%.2f", (double) totalWT / process));
+//
+//        //prints the final ave and total
+//        System.out.println("Total CT: " + totalCT + " | " + "Ave CT: " + AveCT);
+//        System.out.println("Total TAT: " + totalTAT + " | " + "Ave TAT: " + AveTAT);
+//        System.out.println("Total WT: " + totalWT + " | " + "Ave WT: " + AveWT);
 
     }
 
     public ArrayList<Process> getCompletedProcess() throws Exception {
-        if (completedProcess.size() == 0) {
+        if (completedProcess.isEmpty()) {
             throw new Exception("Simulate the process first");
         }
         return this.completedProcess;
