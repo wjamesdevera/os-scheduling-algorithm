@@ -14,12 +14,10 @@ public class ShortestJobFirst {
 
     private Process electNextProcess() {
         double minBurstTime = Integer.MAX_VALUE;
-        double minArrivalTime = Integer.MAX_VALUE;
         Process electedProcess = null;
         for(Process process: this.readyQueue) {
-            if (process.getBurstTime() <= minBurstTime || process.getArrivalTime() <= minArrivalTime) {
+            if (process.getBurstTime() < minBurstTime) {
                 minBurstTime = process.getBurstTime();
-                minArrivalTime = process.getArrivalTime();
                 electedProcess = process;
             }
         }
