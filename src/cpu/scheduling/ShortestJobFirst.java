@@ -1,77 +1,134 @@
 package cpu.scheduling;
-import java.io.*;
-import java.sql.SQLOutput;
+import utils.Process;
 import java.util.*;
 
 public class ShortestJobFirst {
     // test comments
+    private ArrayList<Process> processes = new ArrayList<>();
+    private final ArrayList<Process> readyQueue = new ArrayList<>();
+    private final ArrayList<Process> completedProcess = new ArrayList<>();
+
+    public ShortestJobFirst(ArrayList<Process> processes) {
+        this.processes = processes;
+    }
+
+    private Process electNextProcess() {
+        double minBurstTime = Integer.MAX_VALUE;
+        double minArrivalTime = Integer.MAX_VALUE;
+        Process electedProcess = null;
+        for(Process process: this.readyQueue) {
+            if (process.getBurstTime() <= minBurstTime || process.getArrivalTime() <= minArrivalTime) {
+                minBurstTime = process.getBurstTime();
+                minArrivalTime = process.getArrivalTime();
+                electedProcess = process;
+            }
+        }
+        return electedProcess;
+    }
+
+    public void simulate() {
+        sortProcessesByArrivalTime();
+        double time = 0;
+        while (this.completedProcess.size() < this.processes.size()) {
+            for (Process process : processes) {
+                if (process.getArrivalTime() <= time && !completedProcess.contains(process) && !readyQueue.contains(process)) {
+                    readyQueue.add(process);
+                }
+            }
+            Process nextProcess = electNextProcess();
+            if (nextProcess == null) {
+                time++;
+            } else {
+                completedProcess.add(nextProcess);
+                nextProcess.setCompletionTime(time + nextProcess.getBurstTime());
+                nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
+                nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
+                readyQueue.remove(nextProcess);
+                time += nextProcess.getBurstTime();
+            }
+        }
+    }
+
+    private void sortProcessesByArrivalTime() {
+        for(int i = 1; i < this.processes.size(); i++) {
+            int j = i;
+            while(j > 0 && processes.get(j).getArrivalTime() < processes.get(j-1).getArrivalTime()) {
+                Process temp = processes.get(j);
+                processes.set(j, processes.get(j-1));
+                processes.set(j-1, temp);
+                j--;
+            }
+        }
+    }
 
     public static void main(String[] args)
     {
-        Scanner input = new Scanner(System.in);
-
-        System.out.print("Number of Process/es: ");
-
-        int process = input.nextInt();
-        int time = 0;
-        int processed = 0;
-        int[] completionTime = new int[process];
-        int[] waitingTime = new int[process];
-        int[] turnAroundTime = new int[process];
-        int totalCT = 0;
-        int totalTAT = 0;
-        int totalWT = 0;
-        double AveCT;
-        double AveTAT;
-        double AveWT;
-        boolean[] completeProcess = new boolean[process];
-        int[][] SJFMatrix = new int[process][3];
-
-
-        //Get Arrival Time and assign it to a Process
-        System.out.println("Arrival Time:");
-       for(int i=0; i < process; i++){
-            System.out.print("AT" + (i+1) + ": ");
-            SJFMatrix[i][1] = input.nextInt();
-            SJFMatrix[i][0] = i + 1;
-
-        }
-
-       //Get Burst Time
-        System.out.println("Burst Time:");
-        for(int i=0; i < process; i++){
-            System.out.print("BT" + (i+1) + ": ");
-            SJFMatrix[i][2] = input.nextInt();
-
-        }
-
-        //Check if all processes were processed
-       while(processed < process){
-           int index = -1;
-           int minBurstTime = Integer.MAX_VALUE;
-
-           for (int i = 0; i < process; i++) {
-
-               //checks if the process is not completed and if it has already arrived
-               if(!completeProcess[i] && SJFMatrix[i][1] <= time) {
-                   if(SJFMatrix[i][2] < minBurstTime) {
-                       minBurstTime = SJFMatrix[i][2]; //minBurstTime changes if the current process' burst is smaller
-                       index = i; //index changes to the number of the current process
-                   }
-               }
-           }
-               if(index == -1) {
-                   time++; //time increments if there is no process in ready queue
-               } else {
-
-                   time += SJFMatrix[index][2]; //computes for completion time
-                   completionTime[index] = time;
-                   turnAroundTime[index] = completionTime[index] - SJFMatrix[index][1]; //computes for turn around time
-                   waitingTime[index] = turnAroundTime[index] - SJFMatrix[index][2]; //computes for waiting time
-                   completeProcess[index] = true; //the current process is now processed.
-                   processed++;
-               }
-       }
+//        Scanner input = new Scanner(System.in);
+//
+//        System.out.print("Number of Process/es: ");
+//
+//        int process = input.nextInt();
+//        int time = 0;
+//        int processed = 0;
+//        int[] completionTime = new int[process];
+//        int[] waitingTime = new int[process];
+//        int[] turnAroundTime = new int[process];
+//        int totalCT = 0;
+//        int totalTAT = 0;
+//        int totalWT = 0;
+//        double AveCT;
+//        double AveTAT;
+//        double AveWT;
+//        boolean[] completeProcess = new boolean[process];
+//        int[][] SJFMatrix = new int[process][3];
+//        int PROCESS_ID = 0;
+//        int ARRIVAL_TIME = 1;
+//        int BURST_TIME = 2;
+//
+//        //Get Arrival Time and assign it to a Process
+//        System.out.println("Arrival Time:");
+//        for(int i=0; i < process; i++){
+//            System.out.print("AT" + (i+1) + ": ");
+//            SJFMatrix[i][ARRIVAL_TIME] = input.nextInt();
+//            SJFMatrix[i][PROCESS_ID] = i + 1;
+//
+//        }
+//
+//       //Get Burst Time
+//        System.out.println("Burst Time:");
+//        for(int i=0; i < process; i++){
+//            System.out.print("BT" + (i+1) + ": ");
+//            SJFMatrix[i][BURST_TIME] = input.nextInt();
+//
+//        }
+//
+//        // Check if all processes were processed
+//       while(processed < process){
+//           int index = -1;
+//           int minBurstTime = Integer.MAX_VALUE;
+//
+//           for (int i = 0; i < process; i++) {
+//
+//               // checks if the process is not completed and if it has already arrived
+//               if(!completeProcess[i] && SJFMatrix[i][ARRIVAL_TIME] <= time) {
+//                   if(SJFMatrix[i][BURST_TIME] < minBurstTime) {
+//                       minBurstTime = SJFMatrix[i][BURST_TIME]; //minBurstTime changes if the current process' burst is smaller
+//                       index = i; //index changes to the number of the current process
+//                   }
+//               }
+//           }
+//
+//           if(index == -1) {
+//               time++; //time increments if there is no process in ready queue
+//           } else {
+//               time += SJFMatrix[index][BURST_TIME]; //computes for completion time
+//               completionTime[index] = time;
+//               turnAroundTime[index] = completionTime[index] - SJFMatrix[index][ARRIVAL_TIME]; //computes for turn around time
+//               waitingTime[index] = turnAroundTime[index] - SJFMatrix[index][BURST_TIME]; //computes for waiting time
+//               completeProcess[index] = true; //the current process is now processed.
+//               processed++;
+//           }
+//       }
 
 
         //displays SJF in table format
@@ -103,5 +160,10 @@ public class ShortestJobFirst {
 
     }
 
-
+    public ArrayList<Process> getCompletedProcess() throws Exception {
+        if (completedProcess.size() == 0) {
+            throw new Exception("Simulate the process first");
+        }
+        return this.completedProcess;
+    }
 }
