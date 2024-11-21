@@ -1,3 +1,4 @@
+import cpu.scheduling.RoundRobin;
 import cpu.scheduling.ShortestJobFirst;
 import utils.Process;
 
@@ -11,15 +12,8 @@ public class Main {
         processes.add(new Process(3, 8, 4));
         processes.add(new Process(4, 0, 7));
         processes.add(new Process(5, 12, 6));
-        ShortestJobFirst sjf = new ShortestJobFirst(processes);
-        sjf.simulate();
-        ArrayList<Process> completedProcess = sjf.getCompletedProcess();
-        for (Process process: completedProcess) {
-            System.out.println(process);
-            System.out.println(process.getCompletionTime());
-            System.out.println(process.getTurnAroundTime());
-            System.out.println(process.getWaitingTime());
-            System.out.println("\n");
-        }
+        RoundRobin rr = new RoundRobin(processes, 3);
+        rr.simulate();
+        rr.printCompletedProcess();
     }
 }
