@@ -1,3 +1,4 @@
+import cpu.scheduling.RoundRobin;
 import cpu.scheduling.ShortestJobFirst;
 import utils.*;
 import utils.Process;
@@ -73,14 +74,6 @@ public class Main {
         System.out.println("=============================================");
     }
 
-    private static void cpuSchedulingMenu() {
-        requestNumberOfProcesses();
-        while (true) {
-            displayCpuSchedulingMenu();
-
-        }
-    }
-
     private static void displayCpuSchedulingMenu() {
         System.out.println("=============================================");
         System.out.println("              CPU Scheduling Simulator       ");
@@ -120,7 +113,24 @@ public class Main {
         sjf.printCompletedProcess();
     }
 
-    private static void requestNumberOfProcesses() {
+    private static void rrMenu() {
+        Validator processValidator = new ProcessCountValidator(MIN_PROCESS, MAX_PROCESS);
+        Validator timeQuantumValidator = new TimeQuantumValidator();
+        InputHandler inputHandler = new InputHandler(scan);
+
+        int numberOfProcesses = inputHandler.requestInput(
+                "Input the number of processes [" + MIN_PROCESS + "-" + MAX_PROCESS + "]: ",
+                processValidator
+        );
+        int[] arrivalTimes = requestArrivalTime(numberOfProcesses);
+        int[] burstTimes = requestBurstTime(numberOfProcesses);
+        generateProcessesArray(numberOfProcesses, arrivalTimes, burstTimes);
+
+        int timeQuantum = inputHandler.requestInput(
+                "Input time quantum: ",
+                timeQuantumValidator
+        );
+        RoundRobin rr = new RoundRobin(timeQuantum);
     }
 
     private static int[] requestArrivalTime(int numberOfProcesses) {
