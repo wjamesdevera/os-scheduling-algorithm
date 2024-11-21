@@ -42,6 +42,10 @@ public class Process {
         return arrivalTime;
     }
 
+    public int getID() {
+        return ID;
+    }
+
     public void setArrivalTime(double arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
