@@ -20,8 +20,7 @@ public class Main {
             switch (input) {
                 case "help" -> displayHelp();
                 case "sjf" -> sjfMenu();
-                case "rr" -> cpuSchedulingMenu();
-                case "scan" -> cpuSchedulingMenu();
+                case "rr" -> rrMenu();
                 case "exit" -> System.exit(1);
             }
         }
@@ -113,7 +112,7 @@ public class Main {
         sjf.printCompletedProcess();
     }
 
-    private static void rrMenu() {
+    private static void rrMenu() throws Exception {
         Validator processValidator = new ProcessCountValidator(MIN_PROCESS, MAX_PROCESS);
         Validator timeQuantumValidator = new TimeQuantumValidator();
         InputHandler inputHandler = new InputHandler(scan);
@@ -130,7 +129,9 @@ public class Main {
                 "Input time quantum: ",
                 timeQuantumValidator
         );
-        RoundRobin rr = new RoundRobin(timeQuantum);
+        RoundRobin rr = new RoundRobin(processes, timeQuantum);
+        rr.simulate();
+        rr.printCompletedProcess();
     }
 
     private static int[] requestArrivalTime(int numberOfProcesses) {
