@@ -98,6 +98,8 @@ public class Main {
         Validator processValidator = new ProcessCountValidator(MIN_PROCESS, MAX_PROCESS);
         InputHandler inputHandler = new InputHandler(scan);
 
+        processes.clear();
+
         int numberOfProcesses = inputHandler.requestInput(
                 "Input the number of processes [" + MIN_PROCESS + "-" + MAX_PROCESS + "]: ",
                 processValidator
@@ -116,6 +118,8 @@ public class Main {
         Validator processValidator = new ProcessCountValidator(MIN_PROCESS, MAX_PROCESS);
         Validator timeQuantumValidator = new TimeQuantumValidator();
         InputHandler inputHandler = new InputHandler(scan);
+
+        processes.clear();
 
         int numberOfProcesses = inputHandler.requestInput(
                 "Input the number of processes [" + MIN_PROCESS + "-" + MAX_PROCESS + "]: ",
