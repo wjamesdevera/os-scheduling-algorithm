@@ -14,11 +14,10 @@ public class MainMenu extends JDialog {
         setContentPane(contentPane);
         setTitle("Operating System Scheduling System v1.0");
         setModal(true);
-        getRootPane().setDefaultButton(diskScanButton);
 
-        diskScanButton.addActionListener(new ActionListener() {
+        shortestJobFirstButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onOK();
+                onSJF();
             }
         });
 
@@ -27,37 +26,23 @@ public class MainMenu extends JDialog {
                 onExit();
             }
         });
-
-        // call onCancel() when cross is clicked
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                onExit();
-            }
-        });
-
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onExit();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
+    private void onSJF() {
+        setVisible(false); // Hide this dialog
+        sjf sjfDialog = new sjf(); // Show sjf dialog
+        sjfDialog.pack();
+        sjfDialog.setVisible(true);
+
     }
 
     private void onExit() {
-        // add your code here if necessary
-        dispose();
+        System.exit(0);
     }
 
     public static void main(String[] args) {
         MainMenu dialog = new MainMenu();
         dialog.pack();
         dialog.setVisible(true);
-        System.exit(0);
     }
 }
