@@ -6,25 +6,22 @@ import java.util.Collections;
 public class DiskScan {
     private final int TRACK_SIZE;
     private int SEEK_RATE;
+    private ArrayList<Integer> seekSequence = new ArrayList<>();
 
-    public DiskScan(int TRACK_SIZE, int SEEK_RATE) throws Exception {
+    public ArrayList<Integer> getSeekSequence() {
+        return seekSequence;
+    }
+
+    public DiskScan(int TRACK_SIZE, int SEEK_RATE) {
         this.TRACK_SIZE = TRACK_SIZE;
-        setSeekRate(SEEK_RATE);
+        this.SEEK_RATE = SEEK_RATE;
     }
 
-    private void printScanResult(int seekCount, ArrayList<Integer> seekSequence) {
-        System.out.println("Total Head Movement: " + seekCount);
-        for(int i = 0; i < seekSequence.size(); i ++) {
-            System.out.println(i + " - " + seekSequence.get(i));
-        }
-    }
-
-    public void scan(int[] requests, int head, Direction direction) {
+    public int scan(int[] requests, int head, Direction direction) {
         int seekCount = 0;
         int distance, currentTrack;
         ArrayList<Integer> left = new ArrayList<>();
         ArrayList<Integer> right = new ArrayList<>();
-        ArrayList<Integer> seekSequence = new ArrayList<>();
 
         if (direction == Direction.LEFT) {
             left.add(0);
@@ -41,6 +38,7 @@ public class DiskScan {
         Collections.sort(right);
 
         int RUN_ROUNDS = 2;
+
         for (int i = 0; i < 2; i++) {
             if (direction == Direction.LEFT) {
                 for (int j = left.size() - 1; j >= 0; j--) {
@@ -62,15 +60,6 @@ public class DiskScan {
                 direction = Direction.LEFT;
             }
         }
-        printScanResult(seekCount, seekSequence);
-    }
-
-    private void setSeekRate(int seekRate) throws Exception {
-        int MAX_SEEK_RATE = 10;
-        final String ERROR_MESSAGE = "SEEK_RATE EXCEEDS MAX_SEEK_RATE:" + MAX_SEEK_RATE;
-        if (seekRate > MAX_SEEK_RATE) {
-            throw new Exception(ERROR_MESSAGE);
-        }
-        this.SEEK_RATE = seekRate;
+        return seekCount;
     }
 }
