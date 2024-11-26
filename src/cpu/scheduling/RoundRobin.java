@@ -15,6 +15,11 @@ public class RoundRobin {
         this.quanta = quanta;
     }
 
+    public RoundRobin(ArrayList<java.lang.Process> processList, double quantum, double quanta, ArrayList<Process> processes) {
+        this.quanta = quanta;
+        this.processes = processes;
+    }
+
     public void simulate() {
         sortProcessesByArrivalTime();
         double time = 0;
