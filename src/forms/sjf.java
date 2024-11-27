@@ -1,5 +1,8 @@
 package forms;
 
+import cpu.scheduling.ShortestJobFirst;
+import utils.Process;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -20,6 +23,8 @@ public class sjf extends JDialog {
     private List<JPanel> dynamicPanels = new ArrayList<>();
     private List<JTextField> arrivalTimeFields = new ArrayList<>();
     private List<JTextField> burstTimeFields = new ArrayList<>();
+    private ShortestJobFirst sjf;
+    private ArrayList<utils.Process> processes = new ArrayList<>();
 
     public sjf() {
         setContentPane(contentPane);
@@ -175,87 +180,67 @@ public class sjf extends JDialog {
             int numProcesses = arrivalTimeFields.size();
             int[] arrivalTimes = new int[numProcesses];
             int[] burstTimes = new int[numProcesses];
-            int[] order = new int[numProcesses];
 
             // Retrieve the arrival and burst times from the text fields
             for (int i = 0; i < numProcesses; i++) {
                 arrivalTimes[i] = Integer.parseInt(arrivalTimeFields.get(i).getText());
                 burstTimes[i] = Integer.parseInt(burstTimeFields.get(i).getText());
-                order[i] = i;
             }
 
             // Combine the arrival time, burst time, and index into a list of processes
-            List<Process> processes = new ArrayList<>();
             for (int i = 0; i < numProcesses; i++) {
-                processes.add(new Process(arrivalTimes[i], burstTimes[i], i));
+                this.processes.add(new utils.Process(i + 1, (double) arrivalTimes[i], (double) burstTimes[i]));
             }
 
-            // Sort processes by arrival time, then burst time
-            processes.sort(Comparator.comparingInt(Process::getArrivalTime)
-                    .thenComparingInt(Process::getBurstTime));
+            sjf = new ShortestJobFirst(processes);
+            ArrayList<utils.Process> result = sjf.simulate();
 
-            int currentTime = 0;
-            int completedProcesses = 0;
-
-            // Run SJF scheduling
-            while (completedProcesses < numProcesses) {
-                Process shortestProcess = null;
-
-                // Find the shortest job that has arrived and is not yet completed
-                for (Process process : processes) {
-                    if (process.getArrivalTime() <= currentTime && !process.isCompleted()) {
-                        if (shortestProcess == null || process.getBurstTime() < shortestProcess.getBurstTime()) {
-                            shortestProcess = process;
-                        }
-                    }
-                }
-
-                // If we have found a process to execute
-                if (shortestProcess != null) {
-                    currentTime += shortestProcess.getBurstTime();
-                    shortestProcess.setCompletionTime(currentTime);
-                    shortestProcess.setTurnaroundTime(currentTime - shortestProcess.getArrivalTime());
-                    shortestProcess.setWaitingTime(shortestProcess.getTurnaroundTime() - shortestProcess.getBurstTime());
-                    shortestProcess.setCompleted(true);
-                    completedProcesses++;
-                } else {
-                    currentTime++;  // If no process is ready, just increment time
-                }
-            }
 
             // Prepare data for JTable
             String[] columns = {"Process", "AT", "BT", "CT", "TAT", "WT"};
-            Object[][] data = new Object[numProcesses + 1][6]; // +1 for the averages row
+            Object[][] data = new Object[numProcesses + 2][6]; // +1 for the averages row
 
-            int totalCT = 0;
-            int totalTAT = 0;
-            int totalWT = 0;
+            int PROCESS_ID = 0;
+            int AT = 1;
+            int BT = 2;
+            int CT = 3;
+            int TAT = 4;
+            int WT = 5;
+
+            double totalCT = 0;
+            double totalTAT = 0;
+            double totalWT = 0;
 
             for (int i = 0; i < numProcesses; i++) {
-                Process process = processes.get(i);
-                data[i][0] = "P" + (process.getIndex() + 1);
-                data[i][1] = process.getArrivalTime();
-                data[i][2] = process.getBurstTime();
-                data[i][3] = process.getCompletionTime();
-                data[i][4] = process.getTurnaroundTime();
-                data[i][5] = process.getWaitingTime();
+                utils.Process process = result.get(i);
 
-                // Add totals for average calculation
-                totalCT += process.getCompletionTime();
-                totalTAT += process.getTurnaroundTime();
-                totalWT += process.getWaitingTime();
+                data[i][PROCESS_ID] = "P" + process.getID();
+                data[i][AT] = process.getArrivalTime();
+                data[i][BT] = process.getBurstTime();
+                data[i][CT] = process.getCompletionTime();
+                data[i][TAT] = process.getTurnAroundTime();
+                data[i][WT] = process.getWaitingTime();
+
             }
+            totalCT = sjf.getTotalCompletionTime();
+            totalTAT = sjf.getTotalTurnAroundTime();
+            totalWT = sjf.getTotalWaitingTime();
 
             // Calculate averages
-            double avgCT = Math.round((double) totalCT / numProcesses * 100.0) / 100.0;
-            double avgTAT = Math.round((double) totalTAT / numProcesses * 100.0) / 100.0;
-            double avgWT = Math.round((double) totalWT / numProcesses * 100.0) / 100.0;
+            double avgCT = Math.round(totalCT / numProcesses * 100.0) / 100.0;
+            double avgTAT = Math.round(totalTAT / numProcesses * 100.0) / 100.0;
+            double avgWT = Math.round(totalWT / numProcesses * 100.0) / 100.0;
 
             // Add average row to the table
-            data[numProcesses][0] = "Average";
-            data[numProcesses][3] = avgCT;
-            data[numProcesses][4] = avgTAT;
-            data[numProcesses][5] = avgWT;
+            data[numProcesses][PROCESS_ID] = "Total";
+            data[numProcesses][CT] = totalCT;
+            data[numProcesses][TAT] = totalTAT;
+            data[numProcesses][WT] = totalWT;
+
+            data[numProcesses + 1][PROCESS_ID] = "Average";
+            data[numProcesses + 1][CT] = avgCT;
+            data[numProcesses + 1][TAT] = avgTAT;
+            data[numProcesses + 1][WT] = avgWT;
 
             // If the table exists, update it
             if (existingTable != null) {

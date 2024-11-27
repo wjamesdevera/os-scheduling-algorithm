@@ -24,7 +24,7 @@ public class ShortestJobFirst {
         return electedProcess;
     }
 
-    public void simulate() {
+    public ArrayList<Process> simulate() {
         sortProcessesByArrivalTime();
         double time = 0;
         while (this.completedProcess.size() < this.processes.size()) {
@@ -45,9 +45,11 @@ public class ShortestJobFirst {
                 time += nextProcess.getBurstTime();
             }
         }
+        sortCompletedByProcessID();
+        return this.completedProcess;
     }
 
-    private double getTotalCompletionTime() {
+    public double getTotalCompletionTime() {
         double total = 0;
         for (Process process: this.completedProcess) {
            total += process.getCompletionTime();
@@ -55,7 +57,7 @@ public class ShortestJobFirst {
         return total;
     }
 
-    private double getTotalTurnAroundTime() {
+    public double getTotalTurnAroundTime() {
         double total = 0;
         for (Process process: this.completedProcess) {
             total += process.getTurnAroundTime();
@@ -63,12 +65,23 @@ public class ShortestJobFirst {
         return total;
     }
 
-    private double getTotalWaitingTime() {
+    public double getTotalWaitingTime() {
         double total = 0;
         for (Process process: this.completedProcess) {
             total += process.getWaitingTime();
         }
         return total;
+    }
+    private void sortCompletedByProcessID() {
+        for(int i = 1; i < this.completedProcess.size(); i++) {
+            int j = i;
+            while(j > 0 && completedProcess.get(j).getArrivalTime() < completedProcess.get(j-1).getArrivalTime()) {
+                Process temp = completedProcess.get(j);
+                completedProcess.set(j, completedProcess.get(j-1));
+                completedProcess.set(j-1, temp);
+                j--;
+            }
+        }
     }
 
     private void sortProcessesByArrivalTime() {
