@@ -36,8 +36,6 @@ public class DiskScan extends JDialog {
         getRootPane().setDefaultButton(buttonOK);
 
 
-        requestSection.setVisible(false);
-
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onOK();
@@ -103,7 +101,7 @@ public class DiskScan extends JDialog {
         requestSection.setLayout(new BorderLayout());
         requestSection.add(buttonSection, BorderLayout.PAGE_END);
         requestSection.add(requestPanel, BorderLayout.PAGE_START);
-        requestSection.setVisible(true);
+//        requestSection.setVisible(true);
 
         leftButton.addActionListener(new ActionListener() {
             @Override
@@ -132,34 +130,42 @@ public class DiskScan extends JDialog {
 
 
     private void onScan(Direction direction) {
-            ArrayList<JTextField> textFields = new ArrayList<>();
-            for (Component component: requestPanel.getComponents()) {
-                if (component instanceof JTextField) {
-                    textFields.add((JTextField) component);
-                }
+        ArrayList<JTextField> textFields = new ArrayList<>();
+        for (Component component: requestPanel.getComponents()) {
+            if (component instanceof JTextField) {
+                textFields.add((JTextField) component);
             }
-            ArrayList<Integer> seekSequence = new ArrayList<>();
-            requestPanel.removeAll();
-            for (JTextField field: textFields) {
-                System.out.println(field.getText());
-                seekSequence.add(Integer.parseInt(field.getText()));
-            }
-            disk.scheduling.DiskScan ds = new disk.scheduling.DiskScan(TRACK_SIZE, SEEK_RATE);
-            int[] sequence = new int[seekSequence.size()];
-            for (int i = 0; i < seekSequence.size(); i++) {
-                sequence[i] = seekSequence.get(i);
-            }
-            int seekCount = ds.scan(sequence, CURRENT_POSITION, direction);
-            ArrayList<Integer> dsResult = ds.getSeekSequence();
-            JLabel resultLabel = new JLabel("Seek Time: " + seekCount);
-            JLabel resultTitle = new JLabel("Result");
+        }
+        ArrayList<Integer> request = new ArrayList<>();
+        requestPanel.removeAll();
+        for (JTextField field: textFields) {
+            System.out.println(field.getText());
+            request.add(Integer.parseInt(field.getText()));
+        }
+        disk.scheduling.DiskScan ds = new disk.scheduling.DiskScan(TRACK_SIZE, SEEK_RATE);
+        int[] sequence = new int[request.size()];
+        for (int i = 0; i < request.size(); i++) {
+            sequence[i] = request.get(i);
+        }
+        int seekCount = ds.scan(sequence, CURRENT_POSITION, direction);
+        ArrayList<Integer> dsResult = ds.getSeekSequence();
+        JLabel resultLabel = new JLabel("Seek Time: " + seekCount);
+        JLabel resultTitle = new JLabel("Result");
+        StringBuilder seekSequenceString = new StringBuilder("Seek Sequence: ");
+        ArrayList<Integer> seekSequence = ds.getSeekSequence();
+        for (Integer i: seekSequence) {
+            seekSequenceString.append(i);
+        }
+        JLabel resultSeekSequence = new JLabel(String.valueOf(seekSequenceString));
 
-            requestSection.removeAll();
-            requestSection.add(resultTitle);
-            requestSection.add(resultLabel);
-            requestSection.revalidate();
-            requestSection.repaint();
-            requestPanel.removeAll();
+
+        requestSection.removeAll();
+        requestSection.add(resultTitle, BorderLayout.PAGE_START);
+        requestSection.add(resultLabel, BorderLayout.CENTER);
+        requestSection.add(resultSeekSequence, BorderLayout.PAGE_END);
+        requestSection.revalidate();
+        requestSection.repaint();
+        requestPanel.removeAll();
     }
 
     private void onCancel() {

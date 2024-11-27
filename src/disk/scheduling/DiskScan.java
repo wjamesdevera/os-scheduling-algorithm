@@ -62,4 +62,10 @@ public class DiskScan {
         }
         return seekCount;
     }
+
+    public void setSeekSequence(ArrayList<Integer> seekSequence) {
+        this.seekSequence = seekSequence;
+    }
+
+
 }
