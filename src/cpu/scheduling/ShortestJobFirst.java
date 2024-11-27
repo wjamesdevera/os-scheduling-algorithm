@@ -24,29 +24,35 @@ public class ShortestJobFirst {
     }
 
     public ArrayList<Process> simulate() {
-        sortProcessesByArrivalTime();
+        sortProcessesByArrivalTime(); // Ensure processes are sorted by arrival time
         double time = 0;
+
         while (this.completedProcess.size() < this.processes.size()) {
-            // checking if a process arrived at the current time
+            // Add processes that have arrived to the ready queue
             for (Process process : processes) {
                 if (process.getArrivalTime() <= time && !completedProcess.contains(process) && !readyQueue.contains(process)) {
                     readyQueue.add(process);
                 }
             }
 
+            // Elect the next process (shortest burst time)
             Process nextProcess = electNextProcess();
+
             if (nextProcess == null) {
+                // If no process is ready, advance time to the next arrival
                 time++;
             } else {
+                // Process execution
                 readyQueue.remove(nextProcess);
                 time += nextProcess.getBurstTime();
-                completedProcess.add(nextProcess);
-                nextProcess.setCompletionTime(time + nextProcess.getBurstTime());
+                nextProcess.setCompletionTime(time);
                 nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
                 nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
+                completedProcess.add(nextProcess);
             }
         }
-        sortCompletedByProcessID();
+
+        sortCompletedByProcessID(); // Sort processes by ID for final output
         return this.completedProcess;
     }
 
