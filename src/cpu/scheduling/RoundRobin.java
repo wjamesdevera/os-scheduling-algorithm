@@ -20,7 +20,7 @@ public class RoundRobin {
         this.processes = processes;
     }
 
-    public void simulate() {
+    public ArrayList<Process> simulate() {
         sortProcessesByArrivalTime();
         double time = 0;
         while (this.completedProcess.size() < this.processes.size()) {
@@ -57,6 +57,8 @@ public class RoundRobin {
                 }
             }
         }
+        sortCompletedProcessById();
+        return completedProcess;
     }
 
     private void sortProcessesByArrivalTime() {
@@ -83,7 +85,7 @@ public class RoundRobin {
         }
     }
 
-    private double getTotalCompletionTime() {
+    public double getTotalCompletionTime() {
         double total = 0;
         for (Process process: this.completedProcess) {
             total += process.getCompletionTime();
@@ -91,7 +93,7 @@ public class RoundRobin {
         return total;
     }
 
-    private double getTotalTurnAroundTime() {
+    public double getTotalTurnAroundTime() {
         double total = 0;
         for (Process process: this.completedProcess) {
             total += process.getTurnAroundTime();
@@ -99,7 +101,7 @@ public class RoundRobin {
         return total;
     }
 
-    private double getTotalWaitingTime() {
+    public double getTotalWaitingTime() {
         double total = 0;
         for (Process process: this.completedProcess) {
             total += process.getWaitingTime();

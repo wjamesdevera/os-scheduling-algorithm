@@ -1,5 +1,8 @@
 package forms;
 
+import cpu.scheduling.RoundRobin;
+import utils.Process;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -22,19 +25,19 @@ public class round_robin extends JDialog {
 
     private DefaultTableModel tableModel;
     private double quanta;
-    private ArrayList<Process> processes = new ArrayList<>();
-    private final Queue<Process> readyQueue = new LinkedList<>();
-    private final ArrayList<Process> completedProcess = new ArrayList<>();
+    private RoundRobin rr;
+    private ArrayList<utils.Process> processes = new ArrayList<>();
+    private ArrayList<utils.Process> result;
 
-    public round_robin(ArrayList<Process> processes, double quanta) {
-        this.processes = processes;
-        this.quanta = quanta;
-    }
-
-    public round_robin(ArrayList<Process> processList, double quantum, double quanta, ArrayList<Process> processes) {
-        this.quanta = quanta;
-        this.processes = processes;
-    }
+//    public round_robin(ArrayList<Process> processes, double quanta) {
+//        this.processes = processes;
+//        this.quanta = quanta;
+//    }
+//
+//    public round_robin(ArrayList<Process> processList, double quantum, double quanta, ArrayList<Process> processes) {
+//        this.quanta = quanta;
+//        this.processes = processes;
+//    }
 
     public round_robin() {
         this.quanta = quanta;
@@ -90,7 +93,7 @@ public class round_robin extends JDialog {
                     int process = Integer.parseInt(textProcess.getText());
                     double arrivalTime = Double.parseDouble(textArrival.getText());
                     double burstTime = Double.parseDouble(textBurst.getText());
-                    processes.add(new Process(process, arrivalTime, burstTime, burstTime));
+                    processes.add(new utils.Process(process, arrivalTime, burstTime));
                     tableModel.addRow(new Object[]{process, arrivalTime, burstTime});
                     clearInputs();
                 } catch (NumberFormatException ex) {
@@ -114,6 +117,7 @@ public class round_robin extends JDialog {
         });
     }
 
+
     private void clearInputs() {
         textProcess.setText("");
         textArrival.setText("");
@@ -121,133 +125,15 @@ public class round_robin extends JDialog {
     }
 
     public void simulate(final double quanta) {
-//        readyQueue.clear();
-//        completedProcess.clear();
-        sortProcessesByArrivalTime();
-        double time = 0;
-
-        while (this.completedProcess.size() < this.processes.size()) {
-            for (Process process : processes) {
-                if (process.getArrivalTime() <= time && !completedProcess.contains(process) && !readyQueue.contains(process)) {
-                    readyQueue.offer(process);
-                }
-            }
-            Process nextProcess = readyQueue.poll();
-            if (nextProcess == null) {
-                time++;
-            } else {
-                nextProcess.setRemainingBurstTime(nextProcess.getRemainingBurstTime() - quanta);
-                if (nextProcess.getRemainingBurstTime() == 0) {
-                    time += quanta;
-                    nextProcess.setCompletionTime(time);
-                    nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
-                    nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
-                    completedProcess.add(nextProcess);
-                } else if (nextProcess.getRemainingBurstTime() < 0) {
-                    time += quanta - Math.abs(nextProcess.getRemainingBurstTime());
-                    nextProcess.setCompletionTime(time);
-                    nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
-                    nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
-                    completedProcess.add(nextProcess);
-                } else {
-                    time += quanta;
-                    for (Process process : processes) {
-                        if (process.getArrivalTime() <= time && !completedProcess.contains(process) && !readyQueue.contains(process) && process != nextProcess) {
-                            readyQueue.offer(process);
-                        }
-                    }
-                    readyQueue.offer(nextProcess);
-                }
-            }
-        }
-    }
-
-    private void sortProcessesByArrivalTime() {
-        for(int i = 1; i < this.processes.size(); i++) {
-            int j = i;
-            while(j > 0 && processes.get(j).getArrivalTime() < processes.get(j-1).getArrivalTime()) {
-                Process temp = processes.get(j);
-                processes.set(j, processes.get(j-1));
-                processes.set(j-1, temp);
-                j--;
-            }
-        }
-    }
-
-    private void sortCompletedProcessById() {
-        for(int i = 1; i < this.completedProcess.size(); i++) {
-            int j = i;
-            while(j > 0 && completedProcess.get(j).getpNum() < completedProcess.get(j-1).getpNum()) {
-                Process temp = completedProcess.get(j);
-                completedProcess.set(j, completedProcess.get(j-1));
-                completedProcess.set(j-1, temp);
-                j--;
-            }
-        }
-    }
-
-    private double getTotalCompletionTime() {
-        double total = 0;
-        for (Process process: this.completedProcess) {
-            total += process.getCompletionTime();
-        }
-        return total;
-    }
-
-    private double getTotalTurnAroundTime() {
-        double total = 0;
-        for (Process process: this.completedProcess) {
-            total += process.getTurnAroundTime();
-        }
-        return total;
-    }
-
-    private double getTotalWaitingTime() {
-        double total = 0;
-        for (Process process: this.completedProcess) {
-            total += process.getWaitingTime();
-        }
-        return total;
+        rr = new RoundRobin(this.processes, quanta);
+        this.result = rr.simulate();
     }
 
     private void displayOutput() {
-//        if (completedProcess.isEmpty()) {
-//            System.out.println("Simulation has not been run. Please run the simulation first.");
-//            return;
-//        }
-//
-//        // Sort the completed processes by their IDs
-//        sortCompletedProcessById();
-//
-//        // Print Header
-//        System.out.printf("%-10s %-10s %-10s %-20s %-20s %-20s%n",
-//                "Process", "Arrival", "Burst", "Completion Time", "Turn Around Time", "Waiting Time");
-//
-//        // Print Details for Each Process
-//        for (Process process : completedProcess) {
-//            System.out.printf("P%-9d %-10.2f %-10.2f %-20.2f %-20.2f %-20.2f%n",
-//                    process.getpNum(), process.getArrivalTime(), process.getBurstTime(),
-//                    process.getCompletionTime(), process.getTurnAroundTime(), process.getWaitingTime());
-//        }
-//
-//        // Calculate Totals and Averages
-//        double totalCompletionTime = getTotalCompletionTime();
-//        double totalTurnAroundTime = getTotalTurnAroundTime();
-//        double totalWaitingTime = getTotalWaitingTime();
-//
-//        double averageCompletionTime = totalCompletionTime / completedProcess.size();
-//        double averageTurnAroundTime = totalTurnAroundTime / completedProcess.size();
-//        double averageWaitingTime = totalWaitingTime / completedProcess.size();
-//
-//        // Print Totals and Averages
-//        System.out.println("\nSummary:");
-//        System.out.printf("%-20s: %-10.2f %-20s: %-10.2f%n", "Total Completion Time", totalCompletionTime, "Average Completion Time", averageCompletionTime);
-//        System.out.printf("%-20s: %-10.2f %-20s: %-10.2f%n", "Total Turn Around Time", totalTurnAroundTime, "Average Turn Around Time", averageTurnAroundTime);
-//        System.out.printf("%-20s: %-10.2f %-20s: %-10.2f%n", "Total Waiting Time", totalWaitingTime, "Average Waiting Time", averageWaitingTime);
         startCompute.addActionListener(e -> {
             try {
                 // Check if simulation is possible
-                if (completedProcess.isEmpty()) {
+                if (result.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Simulation has not been run. Please add processes and start computation.",
                             "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -256,28 +142,25 @@ public class round_robin extends JDialog {
                 // Clear previous output
                 resultArea.setText("");
 
-                // Sort the completed processes by their IDs
-                sortCompletedProcessById();
-
                 // Prepare output
                 StringBuilder output = new StringBuilder();
                 output.append(String.format("%-10s %-10s %-10s %-20s %-20s %-20s%n",
                         "Process", "Arrival", "Burst", "Completion Time", "Turn Around Time", "Waiting Time"));
 
-                for (Process process : completedProcess) {
+                for (Process process : result) {
                     output.append(String.format("P%-9d %-10.2f %-10.2f %-20.2f %-20.2f %-20.2f%n",
-                            process.getpNum(), process.getArrivalTime(), process.getBurstTime(),
+                            process.getID(), process.getArrivalTime(), process.getBurstTime(),
                             process.getCompletionTime(), process.getTurnAroundTime(), process.getWaitingTime()));
                 }
 
                 // Calculate Totals and Averages
-                double totalCompletionTime = getTotalCompletionTime();
-                double totalTurnAroundTime = getTotalTurnAroundTime();
-                double totalWaitingTime = getTotalWaitingTime();
+                double totalCompletionTime = this.rr.getTotalCompletionTime();
+                double totalTurnAroundTime = this.rr.getTotalTurnAroundTime();
+                double totalWaitingTime = this.rr.getTotalWaitingTime();
 
-                double averageCompletionTime = totalCompletionTime / completedProcess.size();
-                double averageTurnAroundTime = totalTurnAroundTime / completedProcess.size();
-                double averageWaitingTime = totalWaitingTime / completedProcess.size();
+                double averageCompletionTime = totalCompletionTime / result.size();
+                double averageTurnAroundTime = totalTurnAroundTime / result.size();
+                double averageWaitingTime = totalWaitingTime / result.size();
 
                 // Append summary
                 output.append("\nSummary:\n");
@@ -300,68 +183,6 @@ public class round_robin extends JDialog {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new round_robin().setVisible(true));
-    }
-
-    // Inner Class to Represent a Process
-    static class Process {
-        private final int pNum;
-        private final double arrivalTime;
-        private final double burstTime;
-        private double remainingBurstTime;
-        private double completionTime;
-        private double turnAroundTime;
-        private double waitingTime;
-
-        public Process(int pNum, double arrivalTime, double burstTime, double remainingBurstTime) {
-            this.pNum = pNum;
-            this.arrivalTime = arrivalTime;
-            this.burstTime = burstTime;
-            this.remainingBurstTime = remainingBurstTime;
-        }
-
-        public int getpNum() {
-            return pNum;
-        }
-
-        public double getArrivalTime() {
-            return arrivalTime;
-        }
-
-        public double getBurstTime() {
-            return burstTime;
-        }
-
-        public double getRemainingBurstTime() {
-            return remainingBurstTime;
-        }
-
-        public void setRemainingBurstTime(double remainingBurstTime) {
-            this.remainingBurstTime = remainingBurstTime;
-        }
-
-        public double getCompletionTime() {
-            return completionTime;
-        }
-
-        public void setCompletionTime(double completionTime) {
-            this.completionTime = completionTime;
-        }
-
-        public double getTurnAroundTime() {
-            return turnAroundTime;
-        }
-
-        public void setTurnAroundTime(double turnAroundTime) {
-            this.turnAroundTime = turnAroundTime;
-        }
-
-        public double getWaitingTime() {
-            return waitingTime;
-        }
-
-        public void setWaitingTime(double waitingTime) {
-            this.waitingTime = waitingTime;
-        }
     }
 }
 

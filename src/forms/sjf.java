@@ -267,11 +267,20 @@ public class sjf extends JDialog {
 
                 // Create a panel for the table and add it to the content pane
                 JPanel tablePanel = new JPanel();
+                tablePanel.setName("table");
                 tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
                 tablePanel.add(tableScrollPane);
+                for (Component component: contentPane.getComponents()) {
+                    if (component instanceof JPanel) {
+                        if (component.getName() != null) {
+                            contentPane.remove(component);
+                        }
+                    }
+                }
                 contentPane.add(tablePanel);
             }
 
+            this.processes.clear();
             contentPane.revalidate();  // Revalidate the layout
             contentPane.repaint();  // Repaint to reflect changes
         } catch (NumberFormatException ex) {
@@ -287,63 +296,6 @@ public class sjf extends JDialog {
         mainMenu.pack();
         mainMenu.setVisible(true);
 
-    }
-
-    private class Process {
-        private int arrivalTime, burstTime, completionTime, turnaroundTime, waitingTime;
-        private boolean completed;
-        private int index;
-
-        public Process(int arrivalTime, int burstTime, int index) {
-            this.arrivalTime = arrivalTime;
-            this.burstTime = burstTime;
-            this.index = index;
-            this.completed = false;
-        }
-
-        public int getArrivalTime() {
-            return arrivalTime;
-        }
-
-        public int getBurstTime() {
-            return burstTime;
-        }
-
-        public int getCompletionTime() {
-            return completionTime;
-        }
-
-        public void setCompletionTime(int completionTime) {
-            this.completionTime = completionTime;
-        }
-
-        public int getTurnaroundTime() {
-            return turnaroundTime;
-        }
-
-        public void setTurnaroundTime(int turnaroundTime) {
-            this.turnaroundTime = turnaroundTime;
-        }
-
-        public int getWaitingTime() {
-            return waitingTime;
-        }
-
-        public void setWaitingTime(int waitingTime) {
-            this.waitingTime = waitingTime;
-        }
-
-        public boolean isCompleted() {
-            return completed;
-        }
-
-        public void setCompleted(boolean completed) {
-            this.completed = completed;
-        }
-
-        public int getIndex() {
-            return index;
-        }
     }
 
     public static void main(String[] args) {
