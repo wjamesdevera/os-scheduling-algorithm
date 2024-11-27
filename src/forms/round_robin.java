@@ -132,6 +132,7 @@ public class round_robin extends JDialog {
         MainMenu mainMenu = new MainMenu(); // Show MainMenu again
         mainMenu.pack();
         mainMenu.setVisible(true);
+        dispose();
     }
 
     public void simulate(final double quanta) throws Exception {
@@ -232,7 +233,10 @@ public class round_robin extends JDialog {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new round_robin().setVisible(true));
+        round_robin dialog = new round_robin();
+        dialog.pack();
+        dialog.setVisible(true);
+        System.exit(0);
     }
 }
 

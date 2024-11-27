@@ -5,14 +5,14 @@ import java.util.LinkedList;
 import utils.Process;
 
 public class RoundRobin {
-    private final double quanta;
+    private final double timeQuantum;
     private final ArrayList<Process> processes;
     private final Queue<Process> readyQueue = new LinkedList<>();
     private final ArrayList<Process> completedProcess = new ArrayList<>();
 
-    public RoundRobin(ArrayList<Process> processes, double quanta) {
+    public RoundRobin(ArrayList<Process> processes, double timeQuantum) {
         this.processes = processes;
-        this.quanta = quanta;
+        this.timeQuantum = timeQuantum;
     }
 
     public ArrayList<Process> simulate() {
@@ -30,23 +30,26 @@ public class RoundRobin {
             if (nextProcess == null) {
                 time++;
             } else {
-                nextProcess.setRemainingBurstTime(nextProcess.getRemainingBurstTime() - quanta);
+                nextProcess.setRemainingBurstTime(nextProcess.getRemainingBurstTime() - timeQuantum);
                 if (nextProcess.getRemainingBurstTime() == 0) {
-                    time += quanta;
+                    time += timeQuantum;
                     nextProcess.setCompletionTime(time);
                     nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
                     nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
                     nextProcess.setRemainingBurstTime(nextProcess.getBurstTime());
                     completedProcess.add(nextProcess);
+                    // 3 - 5 = -2
+                    // time  5 - abs(-2) = 2
+                    // = 3
                 } else if (nextProcess.getRemainingBurstTime() < 0) {
-                    time += quanta - Math.abs(nextProcess.getRemainingBurstTime());
+                    time += timeQuantum - Math.abs(nextProcess.getRemainingBurstTime());
                     nextProcess.setCompletionTime(time);
                     nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
                     nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
                     nextProcess.setRemainingBurstTime(nextProcess.getBurstTime());
                     completedProcess.add(nextProcess);
                 } else {
-                    time += quanta;
+                    time += timeQuantum;
                     for (Process process : processes) {
                         if (process.getArrivalTime() <= time && !completedProcess.contains(process) && !readyQueue.contains(process) && process != nextProcess) {
                             readyQueue.offer(process);
@@ -60,6 +63,7 @@ public class RoundRobin {
         return completedProcess;
     }
 
+    // Insertion Sort
     private void sortProcessesByArrivalTime() {
         for(int i = 1; i < this.processes.size(); i++) {
             int j = i;
@@ -72,6 +76,7 @@ public class RoundRobin {
         }
     }
 
+    // Insertion Sort
     private void sortCompletedProcessById() {
         for(int i = 1; i < this.completedProcess.size(); i++) {
             int j = i;

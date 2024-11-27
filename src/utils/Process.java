@@ -8,14 +8,6 @@ public class Process {
     private double turnAroundTime;
     private double waitingTime;
 
-    public double getRemainingBurstTime() {
-        return remainingBurstTime;
-    }
-
-    public void setRemainingBurstTime(double remainingBurstTime) {
-        this.remainingBurstTime = remainingBurstTime;
-    }
-
     private double remainingBurstTime;
 
     public Process(int ID, double arrivalTime, double burstTime) {
@@ -71,6 +63,14 @@ public class Process {
 
     public void setID(int ID) {
         this.ID = ID;
+    }
+
+    public double getRemainingBurstTime() {
+        return remainingBurstTime;
+    }
+
+    public void setRemainingBurstTime(double remainingBurstTime) {
+        this.remainingBurstTime = remainingBurstTime;
     }
 
     @Override

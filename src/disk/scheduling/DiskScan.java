@@ -5,7 +5,7 @@ import java.util.Collections;
 
 public class DiskScan {
     private final int TRACK_SIZE;
-    private int SEEK_RATE;
+    private final int SEEK_RATE;
     private ArrayList<Integer> seekSequence = new ArrayList<>();
 
     public ArrayList<Integer> getSeekSequence() {
@@ -39,7 +39,7 @@ public class DiskScan {
 
         int RUN_ROUNDS = 2;
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < RUN_ROUNDS; i++) {
             if (direction == Direction.LEFT) {
                 for (int j = left.size() - 1; j >= 0; j--) {
                     currentTrack = left.get(j);
@@ -66,6 +66,5 @@ public class DiskScan {
     public void setSeekSequence(ArrayList<Integer> seekSequence) {
         this.seekSequence = seekSequence;
     }
-
 
 }

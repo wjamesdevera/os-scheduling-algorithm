@@ -1,5 +1,6 @@
 import cpu.scheduling.RoundRobin;
 import cpu.scheduling.ShortestJobFirst;
+import forms.MainMenu;
 import utils.*;
 import utils.Process;
 
@@ -14,6 +15,9 @@ public class Main {
     private static final ArrayList<Process> processes = new ArrayList<>();
     private static final Scanner scan = new Scanner(System.in);
     public static void main(String[] args) throws Exception {
+        MainMenu mainDialog = new MainMenu();
+        mainDialog.pack();
+        mainDialog.setVisible(true);
         while (true) {
             displayWelcomeMessage();
             String input = requestUserInput();
