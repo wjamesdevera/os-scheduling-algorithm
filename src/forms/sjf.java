@@ -253,6 +253,7 @@ public class sjf extends JDialog {
                 });
             } else {
                 // If the table doesn't exist, create a new one (this is a fallback)
+                JPanel tablePanel = new JPanel();
                 JTable table = new JTable(new DefaultTableModel(data, columns) {
                     @Override
                     public boolean isCellEditable(int row, int column) {
@@ -266,7 +267,6 @@ public class sjf extends JDialog {
                 JScrollPane tableScrollPane = new JScrollPane(table);
 
                 // Create a panel for the table and add it to the content pane
-                JPanel tablePanel = new JPanel();
                 tablePanel.setName("table");
                 tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
                 tablePanel.add(tableScrollPane);
@@ -295,7 +295,6 @@ public class sjf extends JDialog {
         MainMenu mainMenu = new MainMenu(); // Show MainMenu again
         mainMenu.pack();
         mainMenu.setVisible(true);
-
     }
 
     public static void main(String[] args) {

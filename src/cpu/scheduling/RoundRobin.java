@@ -15,12 +15,9 @@ public class RoundRobin {
         this.quanta = quanta;
     }
 
-    public RoundRobin(ArrayList<java.lang.Process> processList, double quantum, double quanta, ArrayList<Process> processes) {
-        this.quanta = quanta;
-        this.processes = processes;
-    }
-
     public ArrayList<Process> simulate() {
+        completedProcess.clear();
+        readyQueue.clear();
         sortProcessesByArrivalTime();
         double time = 0;
         while (this.completedProcess.size() < this.processes.size()) {
@@ -39,12 +36,14 @@ public class RoundRobin {
                     nextProcess.setCompletionTime(time);
                     nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
                     nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
+                    nextProcess.setRemainingBurstTime(nextProcess.getBurstTime());
                     completedProcess.add(nextProcess);
                 } else if (nextProcess.getRemainingBurstTime() < 0) {
                     time += quanta - Math.abs(nextProcess.getRemainingBurstTime());
                     nextProcess.setCompletionTime(time);
                     nextProcess.setTurnAroundTime(nextProcess.getCompletionTime() - nextProcess.getArrivalTime());
                     nextProcess.setWaitingTime(nextProcess.getTurnAroundTime() - nextProcess.getBurstTime());
+                    nextProcess.setRemainingBurstTime(nextProcess.getBurstTime());
                     completedProcess.add(nextProcess);
                 } else {
                     time += quanta;
